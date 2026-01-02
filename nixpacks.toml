@@ -1,0 +1,21 @@
+[phases.setup]
+nixPkgs = ['nodejs-18_x', 'openssl']
+
+[phases.install]
+cmds = [
+  'npm install --prefix server',
+  'npm install --prefix client'
+]
+
+[phases.build]
+cmds = [
+  'npm run build --prefix client',
+  'mkdir -p server/public',
+  'cp -r client/build/* server/public/ || true'
+]
+
+[start]
+cmd = 'node server/index.js'
+
+[variables]
+NODE_ENV = 'production'

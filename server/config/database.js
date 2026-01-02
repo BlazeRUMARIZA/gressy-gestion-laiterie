@@ -3,30 +3,66 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST || 'localhost',
-  user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'dairy_management',
-  port: process.env.DB_PORT || 3306,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
+// Support Railway MYSQL_URL or individual variables
+const createPoolConfig = () => {
+  // If MYSQL_URL is provided (Railway), use it
+  if (process.env.MYSQL_URL) {
+    return process.env.MYSQL_URL;
+  }
+  
+  // Otherwise, use individual variables (Docker/Local)
+  return {
+    host: process.env.DB_HOST || process.env.MYSQL_HOST || 'localhost',
+    user: process.env.DB_USER || process.env.MYSQL_USER || 'root',
+    password: process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || '',
+    database: process.env.DB_NAME || process.env.MYSQL_DATABASE || 'dairy_management',
+    port: process.env.DB_PORT || process.env.MYSQL_PORT || 3306,
+    waitForConnections: true,
+    connectionLimit: 10,
+    queueLimit: 0,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 0
+  };
+};
+
+const pool = mysql.createPool(createPoolConfig());
+
+// Test database connection with retry logic (useful for Railway)
+const connectWithRetry = async (retries = 5, delay = 3000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      await pool.query('SELECT 1');
+      console.log('✓ Database connection successful');
+      return true;
+    } catch (err) {
+      console.log(`Database connection attempt ${i + 1}/${retries} failed:`, err.message);
+      if (i < retries - 1) {
+        console.log(`Retrying in ${delay / 1000} seconds...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  throw new Error('Failed to connect to database after ' + retries + ' attempts');
+};
 
 // Initialize database schema
 const initialize = async () => {
   try {
-    // Create database if it doesn't exist
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'root',
-      password: process.env.DB_PASSWORD || '',
-      port: process.env.DB_PORT || 3306
-    });
+    // First, ensure we can connect with retry logic
+    await connectWithRetry();
 
-    await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'dairy_management'}`);
-    await connection.end();
+    // Create database if it doesn't exist (skip for Railway as DB is pre-created)
+    if (!process.env.MYSQL_URL && !process.env.RAILWAY_ENVIRONMENT) {
+      const connection = await mysql.createConnection({
+        host: process.env.DB_HOST || 'localhost',
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || '',
+        port: process.env.DB_PORT || 3306
+      });
+
+      await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME || 'dairy_management'}`);
+      await connection.end();
+    }
 
     // Create tables
     await pool.query(`
