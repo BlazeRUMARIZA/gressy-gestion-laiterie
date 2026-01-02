@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
+import { FaUser, FaLock, FaCow, FaSignInAlt, FaInfoCircle } from 'react-icons/fa';
 import './Login.css';
 
 const Login = () => {
@@ -30,38 +31,80 @@ const Login = () => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1>🐄 Dairy Management System</h1>
-        <h2>Login</h2>
-        {error && <div className="alert alert-error">{error}</div>}
+        <div className="login-header">
+          <div className="logo-wrapper">
+            <FaCow className="logo-icon" />
+          </div>
+          <h1>Gressy Gestion Laiterie</h1>
+          <p className="subtitle">Système de Gestion de Ferme Laitière</p>
+        </div>
+        
+        {error && (
+          <div className="alert alert-error">
+            <FaInfoCircle className="alert-icon" />
+            <span>{error}</span>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              placeholder="Enter username"
-            />
+            <label>
+              <FaUser className="label-icon" />
+              Nom d'utilisateur
+            </label>
+            <div className="input-wrapper">
+              <FaUser className="input-icon" />
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                placeholder="Entrez votre nom d'utilisateur"
+              />
+            </div>
           </div>
+          
           <div className="form-group">
-            <label>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="Enter password"
-            />
+            <label>
+              <FaLock className="label-icon" />
+              Mot de passe
+            </label>
+            <div className="input-wrapper">
+              <FaLock className="input-icon" />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Entrez votre mot de passe"
+              />
+            </div>
           </div>
+          
           <button type="submit" className="btn btn-primary" disabled={loading}>
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? (
+              <>
+                <div className="spinner"></div>
+                Connexion en cours...
+              </>
+            ) : (
+              <>
+                <FaSignInAlt className="btn-icon" />
+                Se connecter
+              </>
+            )}
           </button>
         </form>
+        
         <div className="login-info">
-          <p>Default credentials:</p>
-          <p><strong>Username:</strong> admin</p>
-          <p><strong>Password:</strong> admin123</p>
+          <FaInfoCircle className="info-icon" />
+          <div className="info-content">
+            <p className="info-title">Identifiants par défaut :</p>
+            <div className="credentials">
+              <p><strong>Nom d'utilisateur:</strong> admin</p>
+              <p><strong>Mot de passe:</strong> admin123</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -69,4 +112,5 @@ const Login = () => {
 };
 
 export default Login;
+
 
