@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import CowModal from '../components/CowModal';
 
@@ -10,11 +10,7 @@ const Cows = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
 
-  useEffect(() => {
-    fetchCows();
-  }, [searchTerm, statusFilter]);
-
-  const fetchCows = async () => {
+  const fetchCows = useCallback(async () => {
     try {
       const params = {};
       if (searchTerm) params.search = searchTerm;
@@ -27,7 +23,11 @@ const Cows = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, statusFilter]);
+
+  useEffect(() => {
+    fetchCows();
+  }, [fetchCows]);
 
   const handleAdd = () => {
     setEditingCow(null);

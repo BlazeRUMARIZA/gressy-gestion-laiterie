@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import api from '../utils/api';
 import MilkModal from '../components/MilkModal';
 
@@ -11,21 +11,16 @@ const MilkProduction = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
 
-  useEffect(() => {
-    fetchCows();
-    fetchRecords();
-  }, [startDate, endDate]);
-
-  const fetchCows = async () => {
+  const fetchCows = useCallback(async () => {
     try {
       const response = await api.get('/api/cows?status=active');
       setCows(response.data);
     } catch (error) {
       console.error('Error fetching cows:', error);
     }
-  };
+  }, []);
 
-  const fetchRecords = async () => {
+  const fetchRecords = useCallback(async () => {
     try {
       const params = {};
       if (startDate) params.startDate = startDate;
@@ -38,7 +33,12 @@ const MilkProduction = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [startDate, endDate]);
+
+  useEffect(() => {
+    fetchCows();
+    fetchRecords();
+  }, [fetchCows, fetchRecords]);
 
   const handleAdd = () => {
     setEditingRecord(null);
