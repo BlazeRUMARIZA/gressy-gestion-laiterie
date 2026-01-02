@@ -3,8 +3,6 @@ import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
 import { 
   FaTachometerAlt, 
-  FaCow, 
-  FaDroplet, 
   FaHeartbeat, 
   FaSeedling, 
   FaSignOutAlt, 
@@ -12,6 +10,7 @@ import {
   FaBars,
   FaTimes
 } from 'react-icons/fa';
+import { GiCow, GiMilkCarton } from 'react-icons/gi';
 import './Layout.css';
 
 const Layout = () => {
@@ -23,8 +22,8 @@ const Layout = () => {
 
   const menuItems = [
     { path: '/dashboard', icon: FaTachometerAlt, label: 'Tableau de Bord' },
-    { path: '/cows', icon: FaCow, label: 'Vaches' },
-    { path: '/milk', icon: FaDroplet, label: 'Production Lait' },
+    { path: '/cows', icon: GiCow, label: 'Vaches' },
+    { path: '/milk', icon: GiMilkCarton, label: 'Production Lait' },
     { path: '/health', icon: FaHeartbeat, label: 'Santé' },
     { path: '/feed', icon: FaSeedling, label: 'Alimentation' },
   ];
@@ -53,7 +52,7 @@ const Layout = () => {
         <div className="sidebar-header">
           <div className="logo-container">
             <div className="logo-icon">
-              <FaCow />
+              <GiCow />
             </div>
             <div className="logo-text">
               <h2>Gressy</h2>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../utils/AuthContext';
-import { FaUser, FaLock, FaCow, FaSignInAlt, FaInfoCircle } from 'react-icons/fa';
+import { FaUser, FaLock, FaSignInAlt, FaInfoCircle } from 'react-icons/fa';
+import { GiCow } from 'react-icons/gi';
 import './Login.css';
 
 const Login = () => {
@@ -33,7 +34,7 @@ const Login = () => {
       <div className="login-card">
         <div className="login-header">
           <div className="logo-wrapper">
-            <FaCow className="logo-icon" />
+            <GiCow className="logo-icon" />
           </div>
           <h1>Gressy Gestion Laiterie</h1>
           <p className="subtitle">Système de Gestion de Ferme Laitière</p>
